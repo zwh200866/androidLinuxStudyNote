@@ -1,0 +1,71 @@
+jack-admin list-server whzhang 31645 java -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8 -XX:+TieredCompilation -cp /home/whzhang/.jack-server/launcher.jar com.android.jack.launcher.ServerLauncher whzhang  21829 /bin/bash /home/whzhang/Android7/android/out/host/linux-x86/bin/jack-admin list-server whzhang 31645 java -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8 -XX:+TieredCompilation -cp /home/whzhang/.jack-server/launcher.jar com.android.jack.launcher.ServerLauncher
+
+
+
+ sudo gedit ./prebuilts/sdk/tools/jack-admin 
+
+
+打造自己的Android源码学习环境之五：编译Android源代码
+
+下载android源代码之后，可以开始编译了。
+0. 编译Android源码
+0.1 设置环境
+
+当前目录是执行repo init时所在的目录。
+$ . build/envsetup.sh
+
+或者
+$ source build/envsetup.sh $ source build/envsetup.sh including device/asus/fugu/vendorsetup.sh including device/generic/mini-emulator-arm64/vendorsetup.sh including device/generic/mini-emulator-armv7-a-neon/vendorsetup.sh including device/generic/mini-emulator-mips64/vendorsetup.sh including device/generic/mini-emulator-mips/vendorsetup.sh including device/generic/mini-emulator-x86_64/vendorsetup.sh including device/generic/mini-emulator-x86/vendorsetup.sh including device/google/dragon/vendorsetup.sh including device/google/marlin/vendorsetup.sh including device/htc/flounder/vendorsetup.sh including device/huawei/angler/vendorsetup.sh including device/lge/bullhead/vendorsetup.sh including device/linaro/hikey/vendorsetup.sh including device/moto/shamu/vendorsetup.sh including sdk/bash_completion/adb.bash
+0.2 选择编译目标
+
+执行lunch，选择默认的aosp_arm-eng。
+
+也可以直接执行lunch aosp_arm-eng
+$ You're building on linux Lunch menu... pick a combo: 1. aosp_arm-eng 2. aosp_arm64-eng 3. aosp_mips-eng 4. aosp_mips64-eng 5. aosp_x86-eng 6. aosp_x86_64-eng 7. full_fugu-userdebug 8. aosp_fugu-userdebug 9. mini_emulator_arm64-userdebug 10. m_e_arm-userdebug 11. m_e_mips64-eng 12. m_e_mips-userdebug 13. mini_emulator_x86_64-userdebug 14. mini_emulator_x86-userdebug 15. aosp_dragon-userdebug 16. aosp_dragon-eng 17. aosp_marlin-userdebug 18. aosp_sailfish-userdebug 19. aosp_flounder-userdebug 20. aosp_angler-userdebug 21. aosp_bullhead-userdebug 22. hikey-userdebug 23. aosp_shamu-userdebug Which would you like? [aosp_arm-eng] ============================================ PLATFORM_VERSION_CODENAME=REL PLATFORM_VERSION=7.1.1 TARGET_PRODUCT=aosp_arm TARGET_BUILD_VARIANT=eng TARGET_BUILD_TYPE=release TARGET_BUILD_APPS= TARGET_ARCH=arm TARGET_ARCH_VARIANT=armv7-a TARGET_CPU_VARIANT=generic TARGET_2ND_ARCH= TARGET_2ND_ARCH_VARIANT= TARGET_2ND_CPU_VARIANT= HOST_ARCH=x86_64 HOST_2ND_ARCH=x86 HOST_OS=linux HOST_OS_EXTRA=Linux-4.2.0-16-generic-x86_64-with-Ubuntu-15.10-wily HOST_CROSS_OS=windows HOST_CROSS_ARCH=x86 HOST_CROSS_2ND_ARCH=x86_64 HOST_BUILD_TYPE=release BUILD_ID=N6F26Q OUT_DIR=out ============================================
+0.3 编译
+
+执行make。大概编译5~6个小时。
+$ make ============================================ PLATFORM_VERSION_CODENAME=REL PLATFORM_VERSION=7.1.1 TARGET_PRODUCT=aosp_arm TARGET_BUILD_VARIANT=eng TARGET_BUILD_TYPE=release TARGET_BUILD_APPS= TARGET_ARCH=arm TARGET_ARCH_VARIANT=armv7-a TARGET_CPU_VARIANT=generic TARGET_2ND_ARCH= TARGET_2ND_ARCH_VARIANT= TARGET_2ND_CPU_VARIANT= HOST_ARCH=x86_64 HOST_2ND_ARCH=x86 HOST_OS=linux HOST_OS_EXTRA=Linux-4.2.0-16-generic-x86_64-with-Ubuntu-15.10-wily HOST_CROSS_OS=windows HOST_CROSS_ARCH=x86 HOST_CROSS_2ND_ARCH=x86_64 HOST_BUILD_TYPE=release BUILD_ID=N6F26Q OUT_DIR=out ============================================ Running kati to generate build-aosp_arm.ninja... 略 including ./tools/external/fat32lib/Android.mk ... including ./tools/test/connectivity/Android.mk ... Starting build with ninja ninja: Entering directory `.' [ 0% 13/22958] Ensure Jack server is installed and started Jack server already installed in "/home/galian/.jack-server" Server is already running [ 0% 17/22958] build out/target/common/obj/java_LIBRARIES/sdk_v13_intermediates/classes.jack [ 97% 22313/22958] host Java: android-icu4j-tests-host (out/host/common/obj/JAVA_LIBRARIES/android-icu4j-tests-host_intermediates/classes) Note: Some input files use or override a deprecated API. Note: Recompile with -Xlint:deprecation for details. Note: Some input files use unchecked or unsafe Operations. Note: Recompile with -Xlint:unchecked for details. [100% 22958/22958] host Executable: primitives_tests_32 (out/host/linux-x86/obj32/EXECUTABLES/primitives_tests_intermediates/primitives_tests32) #### make completed successfully (04:37:17 (hh:mm:ss)) ####
+
+编译完成之后，Android源码目录占用空间，大概85GB： 其中代码20GB，.repo目录占用34GB，out目录占用31GB。
+1. 可能出现的问题
+1.1 You are attempting to build with the incorrect version of java.
+
+如果安装了openjdk-8，但是编译的是Android 6.0.1的代码（或者之前的版本），会报如下错误：
+Checking build tools versions... ************************************************************ You are attempting to build with the incorrect version of java. Your version is: openjdk version "1.8.0_91" OpenJDK Runtime Environment (build 1.8.0_91-8u91-b14-3ubuntu1~15.10.1-b14) OpenJDK 64-Bit Server VM (build 25.91-b14, mixed mode). The required version is: "1.7.x" Please follow the machine setup instructions at https://source.android.com/source/initializing.html ************************************************************ build/core/main.mk:171: *** stop。 停止。 #### make failed to build some targets (5 seconds) ####
+
+解决方法：
+sudo apt-get install openjdk-7-jdk sudo apt-get install openjdk-7-jre
+1.2 No space left on device
+Created filesystem with 1682/98304 inodes and 139434/393216 blocks Install system fs image: out/target/product/generic/system.img acp: failed writing 'out/target/product/generic/system.img': No space left on device build/core/Makefile:1042: recipe for target 'out/target/product/generic/system.img' failed make: *** [out/target/product/generic/system.img] Error 1 make: *** Deleting file 'out/target/product/generic/system.img'
+
+没有剩余空间了，这是由于之前分配给虚拟系统的硬盘空间太少了。 一个缓解此问题的方法是，删除.repo目录。.repo目录大概占用34GB左右的空间。
+1.3 Communication error with Jack server
+
+问题log如下：
+[ 35% 12670/35623] build out/target/common/obj/JAVA_LIBRARIES/sdk_v15_intermediates/classes.jack FAILED: /bin/bash -c "(mkdir -p out/target/common/obj/JAVA_LIBRARIES/sdk_v15_intermediates/classes.jack.tmpjill.res ) && (unzip -qo prebuilts/sdk/15/android.jar -d out/target/common/obj/JAVA_LIBRARIES/sdk_v15_intermediates/classes.jack.tmpjill.res ) && (find out/target/common/obj/JAVA_LIBRARIES/sdk_v15_intermediates/classes.jack.tmpjill.res -iname \"*.class\" -delete ) && (JACK_VERSION=3.36.CANDIDATE out/host/linux-x86/bin/jack @build/core/jack-default.args --verbose error -D jack.import.resource.policy=keep-first -D jack.import.type.policy=keep-first -D jack.android.min-api-level=1 --import prebuilts/sdk/15/android.jar --import-resource out/target/common/obj/JAVA_LIBRARIES/sdk_v15_intermediates/classes.jack.tmpjill.res --output-jack out/target/common/obj/JAVA_LIBRARIES/sdk_v15_intermediates/classes.jack ) && (rm -rf out/target/common/obj/JAVA_LIBRARIES/sdk_v15_intermediates/classes.jack.tmpjill.res )" Communication error with Jack server (56). Try 'jack-diagnose' [ 35% 12670/35623] Building with Jack: out/target/common/obj/JAVA_LIBRARIES/framework_intermediates/with-local/classes.dex FAILED: /bin/bash out/target/common/obj/JAVA_LIBRARIES/framework_intermediates/with-local/classes.dex.rsp Communication error with Jack server (56). Try 'jack-diagnose' ninja: build stopped: subcommand failed. build/core/ninja.mk:148: recipe for target 'ninja_wrapper' failed make: *** [ninja_wrapper] Error 1
+
+解决方法，可以试试执行如下命令：
+$ jack-admin start-server Launching Jack server java -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8 -XX:+TieredCompilation -cp /home/galian/.jack-server/launcher.jar com.android.jack.launcher.ServerLauncher
+1.4 Out of memory error (version 1.2-rc4 ‘Carnac’ …)
+FAILED: /bin/bash out/target/common/obj/JAVA_LIBRARIES/core-all_intermediates/with-local/classes.dex.rsp Out of memory error (version 1.2-rc4 'Carnac' (298900 f95d7bdecfceb327f9d201a1348397ed8a843843 by android-jack-team@google.com)). Java heap space. Try increasing heap size with java option '-Xmx<size>'. Warning: This may have produced partial or corrupted output. [ 34% 12242/35623] Building with Jack: out/target/common/obj/JAVA_LIBRARIES/libprotobuf-java-nano_intermediates/classes.jack ninja: build stopped: subcommand failed. build/core/ninja.mk:148: recipe for target 'ninja_wrapper' failed make: *** [ninja_wrapper] Error 1
+
+解决方法： 上面已经给出提示：Try increasing heap size with java option '-Xmx<size>'。 【注意】：以下执行jack-admin的环境是刚才出现编译错误的Terminal。如果是在新的Terminal中执行jack-admin，需要先执行source build/envsetup.sh和lunch。
+$ which jack-admin /home/galian/android/out/host/linux-x86/bin/jack-admin
+
+当前已经有jack-server在运行：
+$ jack-admin list-server galian 31645 java -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8 -XX:+TieredCompilation -cp /home/galian/.jack-server/launcher.jar com.android.jack.launcher.ServerLauncher
+
+所以，具体的修改方法如下：
+
+第一步，停止Server：jack-admin stop-server。
+
+第二步，添加-Xmx2048m或者-Xmx2g，当然也可以设置更大的内存，例如-Xmx3g。 打开prebuilts/sdk/tools/jack-admin文件，有2种修改方式，选其一即可，我采用的是方式2，设置的是-Xmx3g： 方式1： 修改29行 JACK_SERVER_VM_ARGUMENTS="${JACK_SERVER_VM_ARGUMENTS:=-Dfile.encoding=UTF-8 -XX:+TieredCompilation}"，改为JACK_SERVER_VM_ARGUMENTS="-Xmx2g -Dfile.encoding=UTF-8 -XX:+TieredCompilation"。注意：这里不再使用${parameter:=default}的语法，直接给JACK_SERVER_VM_ARGUMENTS赋值。
+
+方式2： 修改454行 JACK_SERVER_COMMAND="java -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=$TMPDIR $JACK_SERVER_VM_ARGUMENTS -cp $LAUNCHER_JAR $LAUNCHER_NAME"，改为JACK_SERVER_COMMAND="java -Xmx2g -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=$TMPDIR $JACK_SERVER_VM_ARGUMENTS -cp $LAUNCHER_JAR $LAUNCHER_NAME"。
+
+第三步， 重新编译。可以看到log，里面有-Xmx3g：
+Launching Jack server java -Xmx3g -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8 -XX:+TieredCompilation -cp /home/galian/.jack-server/launcher.jar com.android.jack.launcher.ServerLauncher
+2. 参考
+
+（1） http://source.android.com/source/building.html
